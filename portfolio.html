@@ -134,7 +134,7 @@ td:not(:first-child){text-align:right}
   <div class="tsep"></div>
   <div class="tdate" id="tdate">sob., 28 mar 2026</div>
   <div class="tsp"></div>
-  <div class="tinfo" id="tinfo">ceny: 18:13</div>
+  <div class="tinfo" id="tinfo">ceny: 07:14</div>
   <button class="tbtn" onclick="refreshAll()" id="rbtn">↻ Odśwież ceny</button>
   <button class="tbtn tbtn-p" onclick="openModal(null,null,null)">+ Dodaj pozycję</button>
 </header>
@@ -142,14 +142,14 @@ td:not(:first-child){text-align:right}
   <div class="sb-scroll">
     <div class="sb-lbl" style="margin-bottom:8px">Portfel łącznie</div>
     <div class="sb-cards">
-      <div class="sc"><div class="sc-l">Łączna wartość (PLN)</div><div class="sc-v" id="s-val">46&nbsp;480&nbsp;zł</div></div>
+      <div class="sc"><div class="sc-l">Łączna wartość (PLN)</div><div class="sc-v" id="s-val">64&nbsp;814&nbsp;zł</div></div>
       <div class="sc"><div class="sc-l">Zainwestowano (PLN)</div><div class="sc-v" id="s-cost">83&nbsp;266&nbsp;zł</div></div>
-      <div class="sc"><div class="sc-l">Zysk / strata (PLN)</div><div class="sc-v neg" id="s-pnl">-36&nbsp;786&nbsp;zł</div></div>
-      <div class="sc"><div class="sc-l">Zwrot %</div><div class="sc-v neg" id="s-ret">-44.18%</div></div>
+      <div class="sc"><div class="sc-l">Zysk / strata (PLN)</div><div class="sc-v neg" id="s-pnl">-18&nbsp;453&nbsp;zł</div></div>
+      <div class="sc"><div class="sc-l">Zwrot %</div><div class="sc-v neg" id="s-ret">-22.16%</div></div>
     </div>
     <div class="sb-lbl">Alokacja</div>
-    <div class="abar" id="abar" style="background:var(--bd)"><div style="flex: 100 1 0%; background: rgb(26, 63, 143); min-width: 2px;"></div><div style="flex: 0 1 0%; background: rgb(26, 92, 56); min-width: 2px;"></div><div style="flex: 0 1 0%; background: rgb(91, 26, 143); min-width: 2px;"></div></div>
-    <div class="aleg" id="aleg"><div class="ai"><span class="adot" style="background:#1A3F8F"></span><span class="an">VWRL.AMS</span><span class="ap">100.0%</span></div><div class="ai"><span class="adot" style="background:#1A5C38"></span><span class="an">GOOG</span><span class="ap">0.0%</span></div><div class="ai"><span class="adot" style="background:#5B1A8F"></span><span class="an">IUSQ.FRK</span><span class="ap">0.0%</span></div></div>
+    <div class="abar" id="abar" style="background:var(--bd)"><div style="flex: 71.713 1 0%; background: rgb(26, 63, 143); min-width: 2px;"></div><div style="flex: 28.287 1 0%; background: rgb(26, 92, 56); min-width: 2px;"></div><div style="flex: 0 1 0%; background: rgb(91, 26, 143); min-width: 2px;"></div></div>
+    <div class="aleg" id="aleg"><div class="ai"><span class="adot" style="background:#1A3F8F"></span><span class="an">VWRL.AMS</span><span class="ap">71.7%</span></div><div class="ai"><span class="adot" style="background:#1A5C38"></span><span class="an">GOOG</span><span class="ap">28.3%</span></div><div class="ai"><span class="adot" style="background:#5B1A8F"></span><span class="an">IUSQ.FRK</span><span class="ap">0.0%</span></div></div>
   </div>
   <div class="sb-foot">
     <div style="margin-bottom:6px">
@@ -175,8 +175,8 @@ td:not(:first-child){text-align:right}
         <span class="acc-name">IKE</span>
         <div class="acc-meta">
           <span class="acc-cnt">2 poz.</span>
-          <span class="acc-val">46&nbsp;480&nbsp;zł</span>
-          <span class="acc-pnl neg">-11&nbsp;505&nbsp;zł  -19.84%</span>
+          <span class="acc-val">64&nbsp;814&nbsp;zł</span>
+          <span class="acc-pnl pos">+6829&nbsp;zł  +11.78%</span>
         </div>
         <button class="btn-ap" onclick="openModal('IKE',event,null)">+ Dodaj</button>
       </div>
@@ -203,10 +203,10 @@ td:not(:first-child){text-align:right}
       </div></td>
       <td class="mono">18</td>
       <td class="mono">210,87&nbsp;USD</td>
-      <td><span class="dim">— odśwież</span></td>
-      <td><span class="dim">—</span></td>
-      <td><span class="dim">—</span></td>
-      <td><span class="dim">—</span></td>
+      <td><span class="mono">273,76&nbsp;USD</span><span class="bsrc src-close">zamknięcie</span></td>
+      <td><span class="mono" style="font-weight:500">18&nbsp;334&nbsp;zł</span><br><span class="mono dim" style="font-size:10px">4927,68&nbsp;USD</span></td>
+      <td><span class="mono pos">+1132,02&nbsp;USD</span><br><span class="mono pos" style="font-size:10px">+29.82%</span></td>
+      <td><span class="mono pos">+4212&nbsp;zł</span></td>
     </tr></tbody></table></div></div><div class="acc-sec open">
       <div class="acc-hd" onclick="toggleAcc('IKZE')">
         <span class="chev open">▶</span>
@@ -235,6 +235,18 @@ td:not(:first-child){text-align:right}
       <td><span class="dim">—</span></td>
       <td><span class="dim">—</span></td>
     </tr></tbody></table></div></div><div class="acc-sec open">
+      <div class="acc-hd" onclick="toggleAcc('PPK')">
+        <span class="chev open">▶</span>
+        <span class="tag tag-PPK">PPK</span>
+        <span class="acc-name">PPK</span>
+        <div class="acc-meta">
+          
+          <span class="acc-val">—</span>
+          <span class="acc-pnl neu">—</span>
+        </div>
+        <button class="btn-ap" onclick="openModal('PPK',event,null)">+ Dodaj</button>
+      </div>
+      <div class="acc-body "><table><tbody><tr class="empty-r"><td colspan="7">Brak pozycji — kliknij "+ Dodaj"</td></tr></tbody></table></div></div><div class="acc-sec open">
       <div class="acc-hd" onclick="toggleAcc('Revolut')">
         <span class="chev open">▶</span>
         <span class="tag tag-Revolut">Revolut</span>
@@ -276,7 +288,7 @@ td:not(:first-child){text-align:right}
 
 <div class="modal-ov" id="modal" style="display: none;" onclick="bgc(event)">
   <div class="modal-box">
-    <div class="mhd"><h3 id="mt">Edytuj pozycję</h3><button class="mxb" onclick="cm()">×</button></div>
+    <div class="mhd"><h3 id="mt">Nowa pozycja</h3><button class="mxb" onclick="cm()">×</button></div>
     <div class="mbody">
       <div><label class="fl">Konto</label>
         <select class="fi" id="fa"><option>IKE</option><option>IKZE</option><option>PPK</option><option>Revolut</option><option>XTB</option><option>Gotówka</option></select></div>
@@ -302,13 +314,13 @@ td:not(:first-child){text-align:right}
     </div>
     <div class="mft">
       <button class="bcn" onclick="cm()">Anuluj</button>
-      <button class="bdl" id="bdel" style="display: block;" onclick="dp()">Usuń</button>
+      <button class="bdl" id="bdel" style="display: none;" onclick="dp()">Usuń</button>
       <button class="bsv" onclick="sp()">Zapisz</button>
     </div>
   </div>
 </div>
-<div class="toast" id="toast">Zapisano — kliknij "↻ Odśwież ceny"</div>
-<div id="log" style="display: none;"><div>18:05:40 Fetching NBP...</div><div>18:05:41 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:07:14 ========= REFRESH START =========</div><div>18:07:14 Fetching NBP...</div><div>18:07:14 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:07:14 Tickers: VWRL.DEX</div><div>18:07:14 [AV] Fetching: VWRL.DEX</div><div>18:07:16 [AV] No price for VWRL.DEX: {"Global Quote":{}}</div><div>18:07:16 ========= DONE 0ok 1fail =========</div><div>18:08:28 ========= REFRESH START =========</div><div>18:08:28 Fetching NBP...</div><div>18:08:28 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:08:28 Tickers: VWRL.AMS</div><div>18:08:28 [AV] Fetching: VWRL.AMS</div><div>18:08:28 [AV] ✓ VWRL.AMS=137.28 EUR</div><div>18:08:28 ========= DONE 1ok 0fail =========</div><div>18:13:32 ========= REFRESH START =========</div><div>18:13:32 Fetching NBP...</div><div>18:13:32 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:13:32 Tickers: VWRL.AMS, GOOG</div><div>18:13:32 [AV] Fetching: VWRL.AMS</div><div>18:13:32 [AV] ✓ VWRL.AMS=137.28 EUR</div><div>18:13:33 [AV] Fetching: GOOG</div><div>18:13:33 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>18:13:33 ========= DONE 1ok 1fail =========</div></div>
+<div class="toast" id="toast">✓ 1 zaktualizowanych, ✗ 2 błędów — naciśnij ` aby zobaczyć logi</div>
+<div id="log" style="display: none;"><div>18:05:40 Fetching NBP...</div><div>18:05:41 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:07:14 ========= REFRESH START =========</div><div>18:07:14 Fetching NBP...</div><div>18:07:14 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:07:14 Tickers: VWRL.DEX</div><div>18:07:14 [AV] Fetching: VWRL.DEX</div><div>18:07:16 [AV] No price for VWRL.DEX: {"Global Quote":{}}</div><div>18:07:16 ========= DONE 0ok 1fail =========</div><div>18:08:28 ========= REFRESH START =========</div><div>18:08:28 Fetching NBP...</div><div>18:08:28 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:08:28 Tickers: VWRL.AMS</div><div>18:08:28 [AV] Fetching: VWRL.AMS</div><div>18:08:28 [AV] ✓ VWRL.AMS=137.28 EUR</div><div>18:08:28 ========= DONE 1ok 0fail =========</div><div>18:13:32 ========= REFRESH START =========</div><div>18:13:32 Fetching NBP...</div><div>18:13:32 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:13:32 Tickers: VWRL.AMS, GOOG</div><div>18:13:32 [AV] Fetching: VWRL.AMS</div><div>18:13:32 [AV] ✓ VWRL.AMS=137.28 EUR</div><div>18:13:33 [AV] Fetching: GOOG</div><div>18:13:33 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>18:13:33 ========= DONE 1ok 1fail =========</div><div>18:27:04 Auto-refresh: nowy dzień, odświeżam ceny...</div><div>18:27:06 ========= REFRESH START =========</div><div>18:27:06 Fetching NBP...</div><div>18:27:06 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:27:06 Tickers: VWRL.AMS, GOOG, IUSQ.FRK</div><div>18:27:06 [AV] Fetching: VWRL.AMS</div><div>18:27:06 [AV] ✓ VWRL.AMS=137.28 EUR</div><div>18:27:07 [AV] Fetching: GOOG</div><div>18:27:07 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>18:27:07 [AV] Fetching: IUSQ.FRK</div><div>18:27:07 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>18:27:08 ========= DONE 1ok 2fail =========</div><div>07:12:47 ========= REFRESH START =========</div><div>07:12:47 Fetching NBP...</div><div>07:12:47 NBP ✓ USD=3.7206 EUR=4.2858</div><div>07:12:47 Tickers: VWRL.AMS, GOOG, IUSQ.FRK</div><div>07:12:47 [AV] Fetching: VWRL.AMS</div><div>07:12:50 [AV] ✓ VWRL.AMS=137.28 EUR</div><div>07:12:50 [AV] Fetching: GOOG</div><div>07:12:50 [AV] ✓ GOOG=273.76 USD</div><div>07:12:51 [AV] Fetching: IUSQ.FRK</div><div>07:12:51 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>07:12:51 ========= DONE 2ok 1fail =========</div><div>07:14:21 ========= REFRESH START =========</div><div>07:14:21 Fetching NBP...</div><div>07:14:21 NBP ✓ USD=3.7206 EUR=4.2858</div><div>07:14:21 Tickers: VWRL.AMS, GOOG, IUSQ.FRK</div><div>07:14:21 [AV] Fetching: VWRL.AMS</div><div>07:14:21 [AV] ✓ VWRL.AMS=137.28 EUR</div><div>07:14:22 [AV] Fetching: GOOG</div><div>07:14:22 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>07:14:22 [AV] Fetching: IUSQ.FRK</div><div>07:14:22 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>07:14:23 ========= DONE 1ok 2fail =========</div></div>
 
 <script>
 const ACCOUNTS=['IKE','IKZE','PPK','Revolut','XTB','Gotówka'];
@@ -452,7 +464,7 @@ async function refreshAll(){
       });
       ok++;
     }else{fail++;}
-    await new Promise(r=>setTimeout(r,300));
+    await new Promise(r=>setTimeout(r,1300));
   }
 
   positions.filter(p=>p.type==='Gotówka').forEach(p=>{p.curPrice=1;p.priceSource='manual';});
@@ -533,7 +545,10 @@ function srcBadge(s){
 
 function renderTable(ps){
   if(!ps.length)return`<table><tbody><tr class="empty-r"><td colspan="7">Brak pozycji — kliknij "+ Dodaj"</td></tr></tbody></table>`;
-  return`<table><thead><tr>
+  return`<table style="table-layout:fixed;width:100%"><colgroup>
+    <col style="width:35%"><col style="width:8%"><col style="width:12%">
+    <col style="width:15%"><col style="width:13%"><col style="width:9%"><col style="width:8%">
+  </colgroup><thead><tr>
     <th>Instrument</th><th>Ilość</th><th>Śr. zakup</th>
     <th>Aktualna</th><th>Wartość PLN</th><th>P&amp;L natyw.</th><th>P&amp;L PLN</th>
   </tr></thead><tbody>`+ps.map(p=>{
@@ -606,7 +621,7 @@ function exportHTML(){
   const src=document.documentElement.outerHTML;
   const data=JSON.stringify({positions,fxRates,openAccs:[...openAccs]}).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
   const injected=src.replace(
-    "const r=localStorage.getItem(SK);if(r){",
+    "const _fb='{"positions":[{"id":"1774717633071","account":"IKE","ticker":"VWRL.AMS","name":"Vanguard FTSE All-World UCITS ETF (Dist)","exchange":"AMSTERDAM","type":"ETF","currency":"EUR","qty":79,"buyPrice":129.55,"curPrice":137.28,"priceSource":"close"},{"id":"1774718010807","account":"IKE","ticker":"GOOG","name":"Alphabet Inc Class C","exchange":"NASDAQ","type":"ETF","currency":"USD","qty":18,"buyPrice":210.87,"curPrice":273.76,"priceSource":"close"},{"id":"1774718133947","account":"IKZE","ticker":"IUSQ.FRK","name":"iShares MSCI ACWI UCITS ETF (Acc)","exchange":"XETRA","type":"ETF","currency":"EUR","qty":70,"buyPrice":84.27,"curPrice":null,"priceSource":"yahoo"}],"fxRates":{"PLN":1,"THB":0.1131,"USD":3.7206,"AUD":2.5647,"HKD":0.4751,"CAD":2.6859,"NZD":2.1462,"SGD":2.8913,"EUR":4.2858,"HUF":0.011013,"CHF":4.6663,"GBP":4.951,"UAH":0.0848,"JPY":0.023273,"CZK":0.1747,"DKK":0.5736,"ISK":0.029845,"NOK":0.3841,"SEK":0.3945,"RON":0.8408,"TRY":0.0836,"ILS":1.1831,"CLP":0.004002,"PHP":0.0615,"MXN":0.2067,"ZAR":0.2171,"BRL":0.7104,"MYR":0.9272,"IDR":0.00021931,"INR":0.039264,"KRW":0.002469,"CNY":0.5386,"XDR":5.0506},"openAccs":["IKE","IKZE","Revolut","XTB","Gotówka","PPK"]}';const r=localStorage.getItem(SK)||_fb;if(r){",
     `const _fb='${data}';const r=localStorage.getItem(SK)||_fb;if(r){`
   );
   const blob=new Blob([injected],{type:'text/html'});
