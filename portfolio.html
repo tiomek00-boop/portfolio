@@ -1,8 +1,10 @@
-<html lang="pl"><head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Portfel Inwestycyjny</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&amp;family=DM+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -52,8 +54,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);font-
 .sb-foot{padding:.875rem 1rem;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:6px}
 .sb-add{width:100%;padding:8px;background:var(--tx);color:var(--sur);border:none;border-radius:var(--r);font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer}
 .sb-add:hover{opacity:.85}
-.sb-exp{width:100%;padding:7px;background:transparent;color:var(--tx2);border:1px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s}
-.sb-exp:hover{background:var(--sur2)}
+.sync-row{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--tx3);padding:4px 0}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--tx3);flex-shrink:0}
+.sync-dot.ok{background:var(--green)}
+.sync-dot.err{background:var(--red)}
+.sync-dot.loading{background:var(--amber);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .main{overflow-y:auto;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:10px}
 .main::-webkit-scrollbar{width:5px}
 .main::-webkit-scrollbar-thumb{background:var(--bd);border-radius:99px}
@@ -132,9 +138,9 @@ td:not(:first-child){text-align:right}
 <header class="topbar">
   <div class="tlogo">portfel <span>/ tracker</span></div>
   <div class="tsep"></div>
-  <div class="tdate" id="tdate">sob., 28 mar 2026</div>
+  <div class="tdate" id="tdate"></div>
   <div class="tsp"></div>
-  <div class="tinfo" id="tinfo">ceny: 07:14</div>
+  <div class="tinfo" id="tinfo"></div>
   <button class="tbtn" onclick="refreshAll()" id="rbtn">↻ Odśwież ceny</button>
   <button class="tbtn tbtn-p" onclick="openModal(null,null,null)">+ Dodaj pozycję</button>
 </header>
@@ -142,164 +148,56 @@ td:not(:first-child){text-align:right}
   <div class="sb-scroll">
     <div class="sb-lbl" style="margin-bottom:8px">Portfel łącznie</div>
     <div class="sb-cards">
-      <div class="sc"><div class="sc-l">Łączna wartość (PLN)</div><div class="sc-v" id="s-val">64&nbsp;814&nbsp;zł</div></div>
-      <div class="sc"><div class="sc-l">Zainwestowano (PLN)</div><div class="sc-v" id="s-cost">83&nbsp;266&nbsp;zł</div></div>
-      <div class="sc"><div class="sc-l">Zysk / strata (PLN)</div><div class="sc-v neg" id="s-pnl">-18&nbsp;453&nbsp;zł</div></div>
-      <div class="sc"><div class="sc-l">Zwrot %</div><div class="sc-v neg" id="s-ret">-22.16%</div></div>
+      <div class="sc"><div class="sc-l">Łączna wartość (PLN)</div><div class="sc-v" id="s-val">—</div></div>
+      <div class="sc"><div class="sc-l">Zainwestowano (PLN)</div><div class="sc-v" id="s-cost">—</div></div>
+      <div class="sc"><div class="sc-l">Zysk / strata (PLN)</div><div class="sc-v" id="s-pnl">—</div></div>
+      <div class="sc"><div class="sc-l">Zwrot %</div><div class="sc-v" id="s-ret">—</div></div>
     </div>
     <div class="sb-lbl">Alokacja</div>
-    <div class="abar" id="abar" style="background:var(--bd)"><div style="flex: 71.713 1 0%; background: rgb(26, 63, 143); min-width: 2px;"></div><div style="flex: 28.287 1 0%; background: rgb(26, 92, 56); min-width: 2px;"></div><div style="flex: 0 1 0%; background: rgb(91, 26, 143); min-width: 2px;"></div></div>
-    <div class="aleg" id="aleg"><div class="ai"><span class="adot" style="background:#1A3F8F"></span><span class="an">VWRL.AMS</span><span class="ap">71.7%</span></div><div class="ai"><span class="adot" style="background:#1A5C38"></span><span class="an">GOOG</span><span class="ap">28.3%</span></div><div class="ai"><span class="adot" style="background:#5B1A8F"></span><span class="an">IUSQ.FRK</span><span class="ap">0.0%</span></div></div>
+    <div class="abar" id="abar" style="background:var(--bd)"></div>
+    <div class="aleg" id="aleg"></div>
   </div>
   <div class="sb-foot">
     <div style="margin-bottom:6px">
       <div class="sb-lbl" style="margin-bottom:4px;display:flex;align-items:center;justify-content:space-between">
         <span>Alpha Vantage API</span>
-        <span id="api-status" style="font-size: 9px; font-weight: 400; text-transform: none; letter-spacing: 0px; color: var(--green);">✓ AV zapisany</span>
+        <span id="api-status" style="font-size:9px;font-weight:400;text-transform:none;letter-spacing:0"></span>
       </div>
       <div style="display:flex;gap:5px">
-        <input id="av-key-input" type="password" placeholder="klucz AV..." autocomplete="off" style="flex: 1 1 0%; padding: 6px 8px; border-color: var(--bd); border-top-style: ; border-top-width: ; border-right-style: ; border-right-width: ; border-bottom-style: ; border-bottom-width: ; border-left-style: ; border-left-width: ; border-image-source: ; border-image-slice: ; border-image-width: ; border-image-outset: ; border-image-repeat: ; border-radius: 7px; font-size: 11px; font-family: &quot;DM Mono&quot;, monospace; background: var(--sur2); color: var(--tx); outline: none; min-width: 0px;" onfocus="this.style.borderColor='var(--bds)'" onblur="this.style.borderColor='var(--bd)'" onkeydown="if(event.key==='Enter')saveAvKey()">
+        <input id="av-key-input" type="password" placeholder="klucz AV..." autocomplete="off"
+          style="flex:1;padding:6px 8px;border:1px solid var(--bd);border-radius:7px;font-size:11px;font-family:'DM Mono',monospace;background:var(--sur2);color:var(--tx);outline:none;min-width:0"
+          onfocus="this.style.borderColor='var(--bds)'" onblur="this.style.borderColor='var(--bd)'"
+          onkeydown="if(event.key==='Enter')saveAvKey()"/>
         <button onclick="saveAvKey()" style="padding:6px 10px;border:1px solid var(--bd);border-radius:7px;font-size:11px;background:var(--tx);color:var(--sur);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif">Zapisz</button>
       </div>
       <div style="font-size:9px;color:var(--tx3);margin-top:3px">Ceny odświeżają się raz dziennie automatycznie</div>
     </div>
     <button class="sb-add" onclick="openModal(null,null,null)">+ Dodaj pozycję</button>
-    <button class="sb-exp" onclick="exportHTML()">Eksportuj HTML z danymi ↓</button>
+    <div class="sync-row">
+      <span class="sync-dot loading" id="sync-dot"></span>
+      <span id="sync-label">Łączenie z chmurą...</span>
+    </div>
   </div>
 </aside>
 <main class="main">
-  <div class="acc-group" id="grp"><div class="acc-sec open">
-      <div class="acc-hd" onclick="toggleAcc('IKE')">
-        <span class="chev open">▶</span>
-        <span class="tag tag-IKE">IKE</span>
-        <span class="acc-name">IKE</span>
-        <div class="acc-meta">
-          <span class="acc-cnt">2 poz.</span>
-          <span class="acc-val">64&nbsp;814&nbsp;zł</span>
-          <span class="acc-pnl pos">+6829&nbsp;zł  +11.78%</span>
-        </div>
-        <button class="btn-ap" onclick="openModal('IKE',event,null)">+ Dodaj</button>
-      </div>
-      <div class="acc-body "><table><thead><tr>
-    <th>Instrument</th><th>Ilość</th><th>Śr. zakup</th>
-    <th>Aktualna</th><th>Wartość PLN</th><th>P&amp;L natyw.</th><th>P&amp;L PLN</th>
-  </tr></thead><tbody><tr onclick="openModal(null,event,'1774717633071')">
-      <td><div class="pc">
-        <div class="pico">VWRL</div>
-        <div><div class="pname">VWRL.AMS <span style="font-weight:400;color:var(--tx2)">· Vanguard FTSE All-World UCITS ETF (Dist)</span></div>
-        <div class="pexch">EUR · AMSTERDAM</div></div>
-      </div></td>
-      <td class="mono">79</td>
-      <td class="mono">129,55&nbsp;€</td>
-      <td><span class="mono">137,28&nbsp;€</span><span class="bsrc src-close">zamknięcie</span></td>
-      <td><span class="mono" style="font-weight:500">46&nbsp;480&nbsp;zł</span><br><span class="mono dim" style="font-size:10px">10&nbsp;845,12&nbsp;€</span></td>
-      <td><span class="mono pos">+610,67&nbsp;€</span><br><span class="mono pos" style="font-size:10px">+5.97%</span></td>
-      <td><span class="mono pos">+2617&nbsp;zł</span></td>
-    </tr><tr onclick="openModal(null,event,'1774718010807')">
-      <td><div class="pc">
-        <div class="pico">GOOG</div>
-        <div><div class="pname">GOOG <span style="font-weight:400;color:var(--tx2)">· Alphabet Inc Class C</span></div>
-        <div class="pexch">USD · NASDAQ</div></div>
-      </div></td>
-      <td class="mono">18</td>
-      <td class="mono">210,87&nbsp;USD</td>
-      <td><span class="mono">273,76&nbsp;USD</span><span class="bsrc src-close">zamknięcie</span></td>
-      <td><span class="mono" style="font-weight:500">18&nbsp;334&nbsp;zł</span><br><span class="mono dim" style="font-size:10px">4927,68&nbsp;USD</span></td>
-      <td><span class="mono pos">+1132,02&nbsp;USD</span><br><span class="mono pos" style="font-size:10px">+29.82%</span></td>
-      <td><span class="mono pos">+4212&nbsp;zł</span></td>
-    </tr></tbody></table></div></div><div class="acc-sec open">
-      <div class="acc-hd" onclick="toggleAcc('IKZE')">
-        <span class="chev open">▶</span>
-        <span class="tag tag-IKZE">IKZE</span>
-        <span class="acc-name">IKZE</span>
-        <div class="acc-meta">
-          <span class="acc-cnt">1 poz.</span>
-          <span class="acc-val">—</span>
-          <span class="acc-pnl neu">—</span>
-        </div>
-        <button class="btn-ap" onclick="openModal('IKZE',event,null)">+ Dodaj</button>
-      </div>
-      <div class="acc-body "><table><thead><tr>
-    <th>Instrument</th><th>Ilość</th><th>Śr. zakup</th>
-    <th>Aktualna</th><th>Wartość PLN</th><th>P&amp;L natyw.</th><th>P&amp;L PLN</th>
-  </tr></thead><tbody><tr onclick="openModal(null,event,'1774718133947')">
-      <td><div class="pc">
-        <div class="pico">IUSQ</div>
-        <div><div class="pname">IUSQ.FRK <span style="font-weight:400;color:var(--tx2)">· iShares MSCI ACWI UCITS ETF (Acc)</span></div>
-        <div class="pexch">EUR · XETRA</div></div>
-      </div></td>
-      <td class="mono">70</td>
-      <td class="mono">84,27&nbsp;€</td>
-      <td><span class="dim">— odśwież</span></td>
-      <td><span class="dim">—</span></td>
-      <td><span class="dim">—</span></td>
-      <td><span class="dim">—</span></td>
-    </tr></tbody></table></div></div><div class="acc-sec open">
-      <div class="acc-hd" onclick="toggleAcc('PPK')">
-        <span class="chev open">▶</span>
-        <span class="tag tag-PPK">PPK</span>
-        <span class="acc-name">PPK</span>
-        <div class="acc-meta">
-          
-          <span class="acc-val">—</span>
-          <span class="acc-pnl neu">—</span>
-        </div>
-        <button class="btn-ap" onclick="openModal('PPK',event,null)">+ Dodaj</button>
-      </div>
-      <div class="acc-body "><table><tbody><tr class="empty-r"><td colspan="7">Brak pozycji — kliknij "+ Dodaj"</td></tr></tbody></table></div></div><div class="acc-sec open">
-      <div class="acc-hd" onclick="toggleAcc('Revolut')">
-        <span class="chev open">▶</span>
-        <span class="tag tag-Revolut">Revolut</span>
-        <span class="acc-name">Revolut</span>
-        <div class="acc-meta">
-          
-          <span class="acc-val">—</span>
-          <span class="acc-pnl neu">—</span>
-        </div>
-        <button class="btn-ap" onclick="openModal('Revolut',event,null)">+ Dodaj</button>
-      </div>
-      <div class="acc-body "><table><tbody><tr class="empty-r"><td colspan="7">Brak pozycji — kliknij "+ Dodaj"</td></tr></tbody></table></div></div><div class="acc-sec open">
-      <div class="acc-hd" onclick="toggleAcc('XTB')">
-        <span class="chev open">▶</span>
-        <span class="tag tag-XTB">XTB</span>
-        <span class="acc-name">XTB</span>
-        <div class="acc-meta">
-          
-          <span class="acc-val">—</span>
-          <span class="acc-pnl neu">—</span>
-        </div>
-        <button class="btn-ap" onclick="openModal('XTB',event,null)">+ Dodaj</button>
-      </div>
-      <div class="acc-body "><table><tbody><tr class="empty-r"><td colspan="7">Brak pozycji — kliknij "+ Dodaj"</td></tr></tbody></table></div></div><div class="acc-sec open">
-      <div class="acc-hd" onclick="toggleAcc('Gotówka')">
-        <span class="chev open">▶</span>
-        <span class="tag tag-Gotowka">Gotówka</span>
-        <span class="acc-name">Gotówka</span>
-        <div class="acc-meta">
-          
-          <span class="acc-val">—</span>
-          <span class="acc-pnl neu">—</span>
-        </div>
-        <button class="btn-ap" onclick="openModal('Gotówka',event,null)">+ Dodaj</button>
-      </div>
-      <div class="acc-body "><table><tbody><tr class="empty-r"><td colspan="7">Brak pozycji — kliknij "+ Dodaj"</td></tr></tbody></table></div></div></div>
+  <div class="acc-group" id="grp"></div>
 </main>
 </div>
 
-<div class="modal-ov" id="modal" style="display: none;" onclick="bgc(event)">
+<div class="modal-ov" id="modal" style="display:none" onclick="bgc(event)">
   <div class="modal-box">
     <div class="mhd"><h3 id="mt">Nowa pozycja</h3><button class="mxb" onclick="cm()">×</button></div>
     <div class="mbody">
       <div><label class="fl">Konto</label>
         <select class="fi" id="fa"><option>IKE</option><option>IKZE</option><option>PPK</option><option>Revolut</option><option>XTB</option><option>Gotówka</option></select></div>
-      <div><label class="fl">Ticker Yahoo Finance</label>
-        <input class="fi" id="ftk" placeholder="np. VWCE.DE, AAPL, VOO, BTC-USD" autocomplete="off">
-        <div class="fi-hint">Dokładny ticker z Yahoo Finance (sprawdź na finance.yahoo.com)</div></div>
+      <div><label class="fl">Ticker Alpha Vantage</label>
+        <input class="fi" id="ftk" placeholder="np. VWRL.AMS, GOOG, IUSQ.FRK" autocomplete="off"/>
+        <div class="fi-hint">Ticker z Alpha Vantage — sprawdź na alphavantage.co</div></div>
       <div><label class="fl">Nazwa wyświetlana (opcjonalnie)</label>
-        <input class="fi" id="fnm" placeholder="np. Vanguard FTSE All-World"></div>
+        <input class="fi" id="fnm" placeholder="np. Vanguard FTSE All-World"/></div>
       <div class="fg2">
         <div><label class="fl">Giełda</label>
-          <input class="fi" id="fex" placeholder="np. NASDAQ, XETRA"></div>
+          <input class="fi" id="fex" placeholder="np. NASDAQ, XETRA"/></div>
         <div><label class="fl">Typ</label>
           <select class="fi" id="ftp"><option>ETF</option><option>Akcja</option><option>Gotówka</option></select></div>
       </div>
@@ -307,45 +205,93 @@ td:not(:first-child){text-align:right}
         <div><label class="fl">Waluta</label>
           <select class="fi" id="fcu"><option>USD</option><option>EUR</option><option>PLN</option><option>GBP</option><option>CHF</option></select></div>
         <div><label class="fl">Ilość</label>
-          <input class="fi" id="fqt" type="number" step="any" min="0" placeholder="np. 10"></div>
+          <input class="fi" id="fqt" type="number" step="any" min="0" placeholder="np. 10"/></div>
       </div>
       <div><label class="fl">Cena zakupu (średnia, w walucie pozycji)</label>
-        <input class="fi" id="fbp" type="number" step="any" min="0" placeholder="np. 120.50"></div>
+        <input class="fi" id="fbp" type="number" step="any" min="0" placeholder="np. 120.50"/></div>
     </div>
     <div class="mft">
       <button class="bcn" onclick="cm()">Anuluj</button>
-      <button class="bdl" id="bdel" style="display: none;" onclick="dp()">Usuń</button>
+      <button class="bdl" id="bdel" style="display:none" onclick="dp()">Usuń</button>
       <button class="bsv" onclick="sp()">Zapisz</button>
     </div>
   </div>
 </div>
-<div class="toast" id="toast">✓ 1 zaktualizowanych, ✗ 2 błędów — naciśnij ` aby zobaczyć logi</div>
-<div id="log" style="display: none;"><div>18:05:40 Fetching NBP...</div><div>18:05:41 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:07:14 ========= REFRESH START =========</div><div>18:07:14 Fetching NBP...</div><div>18:07:14 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:07:14 Tickers: VWRL.DEX</div><div>18:07:14 [AV] Fetching: VWRL.DEX</div><div>18:07:16 [AV] No price for VWRL.DEX: {"Global Quote":{}}</div><div>18:07:16 ========= DONE 0ok 1fail =========</div><div>18:08:28 ========= REFRESH START =========</div><div>18:08:28 Fetching NBP...</div><div>18:08:28 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:08:28 Tickers: VWRL.AMS</div><div>18:08:28 [AV] Fetching: VWRL.AMS</div><div>18:08:28 [AV] ✓ VWRL.AMS=137.28 EUR</div><div>18:08:28 ========= DONE 1ok 0fail =========</div><div>18:13:32 ========= REFRESH START =========</div><div>18:13:32 Fetching NBP...</div><div>18:13:32 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:13:32 Tickers: VWRL.AMS, GOOG</div><div>18:13:32 [AV] Fetching: VWRL.AMS</div><div>18:13:32 [AV] ✓ VWRL.AMS=137.28 EUR</div><div>18:13:33 [AV] Fetching: GOOG</div><div>18:13:33 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>18:13:33 ========= DONE 1ok 1fail =========</div><div>18:27:04 Auto-refresh: nowy dzień, odświeżam ceny...</div><div>18:27:06 ========= REFRESH START =========</div><div>18:27:06 Fetching NBP...</div><div>18:27:06 NBP ✓ USD=3.7206 EUR=4.2858</div><div>18:27:06 Tickers: VWRL.AMS, GOOG, IUSQ.FRK</div><div>18:27:06 [AV] Fetching: VWRL.AMS</div><div>18:27:06 [AV] ✓ VWRL.AMS=137.28 EUR</div><div>18:27:07 [AV] Fetching: GOOG</div><div>18:27:07 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>18:27:07 [AV] Fetching: IUSQ.FRK</div><div>18:27:07 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>18:27:08 ========= DONE 1ok 2fail =========</div><div>07:12:47 ========= REFRESH START =========</div><div>07:12:47 Fetching NBP...</div><div>07:12:47 NBP ✓ USD=3.7206 EUR=4.2858</div><div>07:12:47 Tickers: VWRL.AMS, GOOG, IUSQ.FRK</div><div>07:12:47 [AV] Fetching: VWRL.AMS</div><div>07:12:50 [AV] ✓ VWRL.AMS=137.28 EUR</div><div>07:12:50 [AV] Fetching: GOOG</div><div>07:12:50 [AV] ✓ GOOG=273.76 USD</div><div>07:12:51 [AV] Fetching: IUSQ.FRK</div><div>07:12:51 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>07:12:51 ========= DONE 2ok 1fail =========</div><div>07:14:21 ========= REFRESH START =========</div><div>07:14:21 Fetching NBP...</div><div>07:14:21 NBP ✓ USD=3.7206 EUR=4.2858</div><div>07:14:21 Tickers: VWRL.AMS, GOOG, IUSQ.FRK</div><div>07:14:21 [AV] Fetching: VWRL.AMS</div><div>07:14:21 [AV] ✓ VWRL.AMS=137.28 EUR</div><div>07:14:22 [AV] Fetching: GOOG</div><div>07:14:22 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>07:14:22 [AV] Fetching: IUSQ.FRK</div><div>07:14:22 [AV] Info msg: Thank you for using Alpha Vantage! Please consider spreading out your free API requests more sparingly (1 request per se</div><div>07:14:23 ========= DONE 1ok 2fail =========</div></div>
+<div class="toast" id="toast"></div>
+<div id="log"></div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyClAB4d5W556BZyHjmulurTWbX9xQrtfHk",
+  authDomain: "portfolio-991ce.firebaseapp.com",
+  databaseURL: "https://portfolio-991ce-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "portfolio-991ce",
+  storageBucket: "portfolio-991ce.firebasestorage.app",
+  messagingSenderId: "90202395772",
+  appId: "1:90202395772:web:f8b1e9e9e1a587fc5225f9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const dataRef = ref(db, 'portfolio');
+
 const ACCOUNTS=['IKE','IKZE','PPK','Revolut','XTB','Gotówka'];
 const PALETTE=['#1A3F8F','#1A5C38','#5B1A8F','#7A4F10','#4A7070','#8F1A5B','#3D6B1A'];
-const SK='portfolio_v4';
-const SK_API='portfolio_apikey';
-let positions=[],fxRates={},openAccs=new Set(ACCOUNTS),editId=null;
+let positions=[], fxRates={}, openAccs=new Set(ACCOUNTS), editId=null, fbReady=false;
 
-function saveApiKey(){
-  const val=document.getElementById('api-key-input')?.value.trim();
-  if(!val?.startsWith('sk-ant-')){return;}
-  localStorage.setItem(SK_API,val);
+function setSyncStatus(status, label){
+  const dot=document.getElementById('sync-dot');
+  const lbl=document.getElementById('sync-label');
+  dot.className='sync-dot'+(status?' '+status:'');
+  lbl.textContent=label;
 }
-function getApiKey(){return localStorage.getItem(SK_API)||'';}
 
-// debug log — press ` to toggle
+function save(){
+  if(!fbReady) return;
+  set(dataRef,{positions,fxRates,openAccs:[...openAccs]})
+    .then(()=>setSyncStatus('ok','Zsynchronizowano ✓'))
+    .catch(e=>{setSyncStatus('err','Błąd zapisu');L('FB save error: '+e.message);});
+}
+
+onValue(dataRef,(snapshot)=>{
+  const d=snapshot.val();
+  if(d){
+    positions=d.positions||[];
+    fxRates=d.fxRates||{};
+    openAccs=new Set(d.openAccs||ACCOUNTS);
+  } else {
+    const local=localStorage.getItem('portfolio_v4');
+    if(local){
+      try{
+        const ld=JSON.parse(local);
+        positions=ld.positions||[];
+        fxRates=ld.fxRates||{};
+        openAccs=new Set(ld.openAccs||ACCOUNTS);
+        set(dataRef,{positions,fxRates,openAccs:[...openAccs]});
+        toast('Przeniesiono dane do chmury ✓');
+        L('Migrated from localStorage to Firebase');
+      }catch(e){}
+    }
+  }
+  if(!fbReady){
+    fbReady=true;
+    setSyncStatus('ok','Połączono z chmurą ✓');
+    render(); updateApiStatus(); checkDailyRefresh();
+    if(!fxRates.USD) fetchNBP().then(r=>{if(r){fxRates=r;save();render();}});
+  } else {
+    render();
+  }
+},(error)=>{
+  setSyncStatus('err','Błąd połączenia');
+  L('Firebase error: '+error.message);
+});
+
 const logEl=document.getElementById('log');
 function L(m){console.log(m);logEl.innerHTML+=`<div>${new Date().toLocaleTimeString()} ${m}</div>`;logEl.scrollTop=logEl.scrollHeight;}
 document.addEventListener('keydown',e=>{if(e.key==='`')logEl.style.display=logEl.style.display==='none'?'block':'none';});
-
-function save(){try{localStorage.setItem(SK,JSON.stringify({positions,fxRates,openAccs:[...openAccs]}));}catch(e){}}
-function loadData(){
-  try{const _fb='{"positions":[{"id":"1774717633071","account":"IKE","ticker":"VWRL.AMS","name":"Vanguard FTSE All-World UCITS ETF (Dist)","exchange":"AMSTERDAM","type":"ETF","currency":"EUR","qty":79,"buyPrice":129.55,"curPrice":137.28,"priceSource":"close"},{"id":"1774718010807","account":"IKE","ticker":"GOOG","name":"Alphabet Inc Class C","exchange":"NASDAQ","type":"ETF","currency":"USD","qty":18,"buyPrice":210.87,"curPrice":null,"priceSource":"yahoo"},{"id":"1774718133947","account":"IKZE","ticker":"IUSQ.FRK","name":"iShares MSCI ACWI UCITS ETF (Acc)","exchange":"XETRA","type":"ETF","currency":"EUR","qty":70,"buyPrice":84.27,"curPrice":null,"priceSource":"yahoo"}],"fxRates":{"PLN":1,"THB":0.1131,"USD":3.7206,"AUD":2.5647,"HKD":0.4751,"CAD":2.6859,"NZD":2.1462,"SGD":2.8913,"EUR":4.2858,"HUF":0.011013,"CHF":4.6663,"GBP":4.951,"UAH":0.0848,"JPY":0.023273,"CZK":0.1747,"DKK":0.5736,"ISK":0.029845,"NOK":0.3841,"SEK":0.3945,"RON":0.8408,"TRY":0.0836,"ILS":1.1831,"CLP":0.004002,"PHP":0.0615,"MXN":0.2067,"ZAR":0.2171,"BRL":0.7104,"MYR":0.9272,"IDR":0.00021931,"INR":0.039264,"KRW":0.002469,"CNY":0.5386,"XDR":5.0506},"openAccs":["IKE","IKZE","Revolut","XTB","Gotówka"]}';const r=localStorage.getItem(SK)||_fb;if(r){const d=JSON.parse(r);positions=d.positions||[];fxRates=d.fxRates||{};openAccs=new Set(d.openAccs||ACCOUNTS);}}
-  catch(e){positions=[];}
-}
 
 const fPLN=(n,d=0)=>n==null||isNaN(n)?'—':new Intl.NumberFormat('pl-PL',{style:'currency',currency:'PLN',minimumFractionDigits:d,maximumFractionDigits:d}).format(n);
 const fCur=(n,c,d=2)=>n==null||isNaN(n)?'—':new Intl.NumberFormat('pl-PL',{style:'currency',currency:c||'PLN',minimumFractionDigits:d,maximumFractionDigits:d}).format(n);
@@ -360,9 +306,8 @@ function comp(p){
   return{val,cost,pnl,pct,valPLN:toPLN(val,p.currency),costPLN:toPLN(cost,p.currency),pnlPLN:toPLN(pnl,p.currency)};
 }
 
-// ── FETCH PRICE via Alpha Vantage ────────────────────────────────────────────
 function getAvKey(){return localStorage.getItem('portfolio_avkey')||'';}
-function saveAvKey(){
+window.saveAvKey=function(){
   const val=document.getElementById('av-key-input').value.trim();
   if(!val){toast('Wpisz klucz Alpha Vantage');return;}
   localStorage.setItem('portfolio_avkey',val);
@@ -386,8 +331,8 @@ async function fetchYahoo(ticker){
     const r=await fetch(url);
     if(!r.ok){L(`[AV] HTTP error: ${r.status}`);return null;}
     const data=await r.json();
-    if(data['Note']){L('[AV] Rate limit: '+data['Note'].slice(0,80));toast('Alpha Vantage: przekroczony limit zapytań — spróbuj później');return null;}
-    if(data['Information']){L('[AV] Info msg: '+data['Information'].slice(0,120));toast('Alpha Vantage: '+data['Information'].slice(0,80));return null;}
+    if(data['Note']){L('[AV] Rate limit: '+data['Note'].slice(0,80));toast('Alpha Vantage: limit zapytań — spróbuj później');return null;}
+    if(data['Information']){L('[AV] Info: '+data['Information'].slice(0,120));toast('Alpha Vantage: '+data['Information'].slice(0,80));return null;}
     const q=data['Global Quote'];
     if(!q||!q['05. price']||q['05. price']===''){L(`[AV] No price for ${ticker}: `+JSON.stringify(data).slice(0,120));return null;}
     const price=parseFloat(q['05. price']);
@@ -401,7 +346,6 @@ async function fetchYahoo(ticker){
   }catch(e){L(`[AV] error: ${e.message}`);return null;}
 }
 
-// Auto-odświeżanie raz dziennie
 function checkDailyRefresh(){
   const last=localStorage.getItem('portfolio_lastrefresh')||'';
   const today=new Date().toISOString().slice(0,10);
@@ -415,86 +359,59 @@ function checkDailyRefresh(){
 async function fetchNBP(){
   try{
     L('Fetching NBP...');
-    const urls=[
-      'https://api.nbp.pl/api/exchangerates/tables/A/?format=json',
-      'https://api.nbp.pl/api/exchangerates/tables/A/'
-    ];
-    let d=null;
-    for(const url of urls){
-      try{
-        const r=await fetch(url,{headers:{Accept:'application/json'}});
-        if(r.ok){d=await r.json();break;}
-      }catch(e){L('NBP attempt failed: '+e.message);}
-    }
-    if(!d){
-      // fallback: użyj zapisanych kursów jeśli są
-      if(fxRates.USD){L('NBP unreachable, using cached rates');return null;}
-      // hardcoded fallback
-      L('NBP unreachable, using fallback rates');
-      return{PLN:1,USD:3.95,EUR:4.27,GBP:5.01,CHF:4.40};
-    }
+    const r=await fetch('https://api.nbp.pl/api/exchangerates/tables/A/?format=json',{headers:{Accept:'application/json'}});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d=await r.json();
     const rates={PLN:1};
     d[0].rates.forEach(x=>rates[x.code]=x.mid);
     L(`NBP ✓ USD=${rates.USD?.toFixed(4)} EUR=${rates.EUR?.toFixed(4)}`);
     return rates;
-  }catch(e){L('NBP error: '+e.message);return null;}
+  }catch(e){
+    L('NBP error: '+e.message);
+    if(fxRates.USD){L('Using cached rates');return null;}
+    return{PLN:1,USD:3.95,EUR:4.27,GBP:5.01,CHF:4.40};
+  }
 }
 
-async function refreshAll(){
+window.refreshAll=async function(){
   const btn=document.getElementById('rbtn');
   btn.innerHTML='<span class="spin">↻</span> Pobieranie…';btn.disabled=true;
   L('========= REFRESH START =========');
-
   const nb=await fetchNBP();
-  if(nb)fxRates=nb;
-
+  if(nb) fxRates=nb;
   const tickers=[...new Set(positions.filter(p=>p.type!=='Gotówka'&&p.ticker).map(p=>p.ticker))];
   L(`Tickers: ${tickers.join(', ')||'(none)'}`);
-
   let ok=0,fail=0;
   for(const t of tickers){
     const res=await fetchYahoo(t);
     if(res){
       positions.forEach(p=>{
-        if(p.ticker===t){
-          p.curPrice=res.price;
-          p.priceSource=res.source;
-          if(res.exchange&&!p.exchange)p.exchange=res.exchange;
-        }
+        if(p.ticker===t){p.curPrice=res.price;p.priceSource=res.source;if(res.exchange&&!p.exchange)p.exchange=res.exchange;}
       });
       ok++;
     }else{fail++;}
     await new Promise(r=>setTimeout(r,1300));
   }
-
   positions.filter(p=>p.type==='Gotówka').forEach(p=>{p.curPrice=1;p.priceSource='manual';});
-
   const now=new Date().toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'});
   document.getElementById('tinfo').textContent=`ceny: ${now}`;
-  save();render();
-  btn.innerHTML='↻ Odśwież ceny';btn.disabled=false;
+  save(); render();
+  btn.innerHTML='↻ Odśwież ceny'; btn.disabled=false;
   L(`========= DONE ${ok}ok ${fail}fail =========`);
-  if(fail>0){
-    toast(`✓ ${ok} zaktualizowanych, ✗ ${fail} błędów — naciśnij \` aby zobaczyć logi`);
-  }else{
-    toast(`✓ Zaktualizowano ${ok} instrumentów — ${now}`);
-  }
+  toast(fail>0?`✓ ${ok} zaktualizowanych, ✗ ${fail} błędów`:`✓ Zaktualizowano ${ok} instrumentów — ${now}`);
 }
 
-// ── RENDER ──────────────────────────────────────────────────────────────────
 function render(){
   positions.filter(p=>p.type==='Gotówka').forEach(p=>{if(!p.curPrice)p.curPrice=1;});
   let tv=0,tc=0;
   positions.forEach(p=>{const c=comp(p);if(c.valPLN!=null)tv+=c.valPLN;if(c.costPLN!=null)tc+=c.costPLN;});
   const tp=tv-tc,tr=tc>0?(tp/tc)*100:0;
   const hasLive=positions.some(p=>p.curPrice&&p.curPrice>0&&p.type!=='Gotówka');
-
   const se=(id,t,cls)=>{const e=document.getElementById(id);e.textContent=t;if(cls!==undefined)e.className='sc-v '+(cls||'');};
-  se('s-val', hasLive&&positions.length?fPLN(tv):'—');
+  se('s-val',hasLive&&positions.length?fPLN(tv):'—');
   se('s-cost',positions.length?fPLN(tc):'—');
-  se('s-pnl', hasLive&&positions.length?(tp>=0?'+':'')+fPLN(tp):'—',hasLive?(tp>=0?'pos':'neg'):'');
-  se('s-ret', hasLive&&positions.length?fPct(tr):'—',hasLive?(tr>=0?'pos':'neg'):'');
-
+  se('s-pnl',hasLive&&positions.length?(tp>=0?'+':'')+fPLN(tp):'—',hasLive?(tp>=0?'pos':'neg'):'');
+  se('s-ret',hasLive&&positions.length?fPct(tr):'—',hasLive?(tr>=0?'pos':'neg'):'');
   const ab=document.getElementById('abar'),al=document.getElementById('aleg');
   ab.innerHTML='';al.innerHTML='';
   if(positions.length&&tv>0){
@@ -505,7 +422,6 @@ function render(){
       li.innerHTML=`<span class="adot" style="background:${col}"></span><span class="an">${p.ticker||p.name}</span><span class="ap">${sh.toFixed(1)}%</span>`;al.appendChild(li);
     });
   }else{ab.style.background='var(--bd)';}
-
   const grp=document.getElementById('grp');grp.innerHTML='';
   ACCOUNTS.forEach(acc=>{
     const ps=positions.filter(p=>p.account===acc);
@@ -517,7 +433,6 @@ function render(){
     const tagK=acc.replace('ó','o');
     const pStr=hasAccLive&&ps.length?`${ap>=0?'+':''}${fPLN(ap)}  ${fPct(ar)}`:'—';
     const pC=ap>=0?'pos':'neg';
-
     const sec=document.createElement('div');
     sec.className='acc-sec'+(isOpen?' open':'');
     sec.innerHTML=`
@@ -571,9 +486,9 @@ function renderTable(ps){
   }).join('')+`</tbody></table>`;
 }
 
-function toggleAcc(id){if(openAccs.has(id))openAccs.delete(id);else openAccs.add(id);save();render();}
+window.toggleAcc=function(id){if(openAccs.has(id))openAccs.delete(id);else openAccs.add(id);save();render();}
 
-function openModal(defAcc,ev,posId){
+window.openModal=function(defAcc,ev,posId){
   if(ev)ev.stopPropagation();editId=posId||null;
   const p=posId?positions.find(x=>x.id===posId):null;
   document.getElementById('mt').textContent=p?'Edytuj pozycję':'Nowa pozycja';
@@ -589,10 +504,10 @@ function openModal(defAcc,ev,posId){
   document.getElementById('modal').style.display='flex';
   setTimeout(()=>document.getElementById('ftk').focus(),60);
 }
-function cm(){document.getElementById('modal').style.display='none';editId=null;}
-function bgc(e){if(e.target===document.getElementById('modal'))cm();}
+window.cm=function(){document.getElementById('modal').style.display='none';editId=null;}
+window.bgc=function(e){if(e.target===document.getElementById('modal'))cm();}
 
-function sp(){
+window.sp=function(){
   const ticker=document.getElementById('ftk').value.trim();
   const qty=parseFloat(document.getElementById('fqt').value);
   const buy=parseFloat(document.getElementById('fbp').value);
@@ -606,28 +521,15 @@ function sp(){
     currency:document.getElementById('fcu').value,
     qty,buyPrice:buy,
     curPrice:existing?.curPrice||null,
-    priceSource:existing?.priceSource||'yahoo',
+    priceSource:existing?.priceSource||'manual',
   };
   if(d.type==='Gotówka'){d.curPrice=1;d.priceSource='manual';}
   if(editId){const i=positions.findIndex(p=>p.id===editId);positions[i]={...positions[i],...d};}
   else positions.push({id:Date.now().toString(),...d});
   save();render();cm();
-  toast('Zapisano — kliknij "↻ Odśwież ceny"');
+  toast('Zapisano ✓');
 }
-function dp(){positions=positions.filter(p=>p.id!==editId);save();render();cm();toast('Usunięto');}
-
-function exportHTML(){
-  if(!positions.length){toast('Dodaj najpierw pozycje');return;}
-  const src=document.documentElement.outerHTML;
-  const data=JSON.stringify({positions,fxRates,openAccs:[...openAccs]}).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-  const injected=src.replace(
-    "const _fb='{"positions":[{"id":"1774717633071","account":"IKE","ticker":"VWRL.AMS","name":"Vanguard FTSE All-World UCITS ETF (Dist)","exchange":"AMSTERDAM","type":"ETF","currency":"EUR","qty":79,"buyPrice":129.55,"curPrice":137.28,"priceSource":"close"},{"id":"1774718010807","account":"IKE","ticker":"GOOG","name":"Alphabet Inc Class C","exchange":"NASDAQ","type":"ETF","currency":"USD","qty":18,"buyPrice":210.87,"curPrice":273.76,"priceSource":"close"},{"id":"1774718133947","account":"IKZE","ticker":"IUSQ.FRK","name":"iShares MSCI ACWI UCITS ETF (Acc)","exchange":"XETRA","type":"ETF","currency":"EUR","qty":70,"buyPrice":84.27,"curPrice":null,"priceSource":"yahoo"}],"fxRates":{"PLN":1,"THB":0.1131,"USD":3.7206,"AUD":2.5647,"HKD":0.4751,"CAD":2.6859,"NZD":2.1462,"SGD":2.8913,"EUR":4.2858,"HUF":0.011013,"CHF":4.6663,"GBP":4.951,"UAH":0.0848,"JPY":0.023273,"CZK":0.1747,"DKK":0.5736,"ISK":0.029845,"NOK":0.3841,"SEK":0.3945,"RON":0.8408,"TRY":0.0836,"ILS":1.1831,"CLP":0.004002,"PHP":0.0615,"MXN":0.2067,"ZAR":0.2171,"BRL":0.7104,"MYR":0.9272,"IDR":0.00021931,"INR":0.039264,"KRW":0.002469,"CNY":0.5386,"XDR":5.0506},"openAccs":["IKE","IKZE","Revolut","XTB","Gotówka","PPK"]}';const r=localStorage.getItem(SK)||_fb;if(r){",
-    `const _fb='${data}';const r=localStorage.getItem(SK)||_fb;if(r){`
-  );
-  const blob=new Blob([injected],{type:'text/html'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='portfolio.html';a.click();URL.revokeObjectURL(a.href);
-  toast('Pobrano portfolio.html z '+positions.length+' pozycjami');
-}
+window.dp=function(){positions=positions.filter(p=>p.id!==editId);save();render();cm();toast('Usunięto');}
 
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 
@@ -636,9 +538,6 @@ document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='n'){e.preventDefault();openModal(null,null,null);}
 });
 document.getElementById('tdate').textContent=new Date().toLocaleDateString('pl-PL',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
-loadData();render();updateApiStatus();checkDailyRefresh();
-if(!fxRates.USD)fetchNBP().then(r=>{if(r){fxRates=r;save();render();}});
 </script>
-
-
-</body></html>
+</body>
+</html>
