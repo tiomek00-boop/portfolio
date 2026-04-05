@@ -209,6 +209,9 @@ td:not(:first-child){text-align:right}
       </div>
       <div><label class="fl">Cena zakupu (średnia, w walucie pozycji)</label>
         <input class="fi" id="fbp" type="number" step="any" min="0" placeholder="np. 120.50"/></div>
+      <div id="fcp-row"><label class="fl">Cena aktualna (opcjonalna — zostaw puste = pobierz przez AV)</label>
+        <input class="fi" id="fcp" type="number" step="any" min="0" placeholder="np. 135.20 — wpisz ręcznie dla PPK/funduszy"/>
+        <div class="fi-hint">Dla PPK i funduszy bez tickera wpisz aktualną wartość jednostki ręcznie</div></div>
     </div>
     <div class="mft">
       <button class="bcn" onclick="cm()">Anuluj</button>
@@ -379,7 +382,7 @@ window.refreshAll=async function(){
   L('========= REFRESH START =========');
   const nb=await fetchNBP();
   if(nb) fxRates=nb;
-  const tickers=[...new Set(positions.filter(p=>p.type!=='Gotówka'&&p.ticker).map(p=>p.ticker))];
+  const tickers=[...new Set(positions.filter(p=>p.type!=='Gotówka'&&p.ticker&&!p.manualPrice).map(p=>p.ticker))];
   L(`Tickers: ${tickers.join(', ')||'(none)'}`);
   let ok=0,fail=0;
   for(const t of tickers){
@@ -500,6 +503,7 @@ window.openModal=function(defAcc,ev,posId){
   document.getElementById('fcu').value=p?.currency||'USD';
   document.getElementById('fqt').value=p?.qty||'';
   document.getElementById('fbp').value=p?.buyPrice||'';
+  document.getElementById('fcp').value=p?.manualPrice||'';
   document.getElementById('bdel').style.display=p?'block':'none';
   document.getElementById('modal').style.display='flex';
   setTimeout(()=>document.getElementById('ftk').focus(),60);
@@ -513,6 +517,8 @@ window.sp=function(){
   const buy=parseFloat(document.getElementById('fbp').value);
   if(!ticker||isNaN(qty)||isNaN(buy)){toast('Wpisz ticker, ilość i cenę zakupu');return;}
   const existing=editId?positions.find(p=>p.id===editId):null;
+  const manualPriceRaw=document.getElementById('fcp').value.trim();
+  const manualPrice=manualPriceRaw?parseFloat(manualPriceRaw):null;
   const d={
     account:document.getElementById('fa').value,ticker,
     name:document.getElementById('fnm').value.trim()||ticker,
@@ -520,8 +526,9 @@ window.sp=function(){
     type:document.getElementById('ftp').value,
     currency:document.getElementById('fcu').value,
     qty,buyPrice:buy,
-    curPrice:existing?.curPrice||null,
-    priceSource:existing?.priceSource||'manual',
+    manualPrice:manualPrice||null,
+    curPrice:manualPrice||(existing?.curPrice||null),
+    priceSource:manualPrice?'manual':(existing?.priceSource||'manual'),
   };
   if(d.type==='Gotówka'){d.curPrice=1;d.priceSource='manual';}
   if(editId){const i=positions.findIndex(p=>p.id===editId);positions[i]={...positions[i],...d};}
