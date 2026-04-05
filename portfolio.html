@@ -47,6 +47,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);font-
 .sc-v.pos{color:var(--green)}.sc-v.neg{color:var(--red)}
 .abar{display:flex;height:5px;border-radius:99px;overflow:hidden;gap:1px;margin-bottom:8px}
 .aleg{display:flex;flex-direction:column;gap:5px}
+.atabs{display:flex;gap:4px;margin-bottom:8px}
+.atab{flex:1;padding:3px 0;font-size:10px;font-weight:600;text-align:center;border-radius:5px;cursor:pointer;border:1px solid var(--bd);background:transparent;color:var(--tx3);font-family:'DM Sans',sans-serif;transition:all .15s}
+.atab.active{background:var(--tx);color:var(--sur);border-color:transparent}
+.rbar{display:flex;height:5px;border-radius:99px;overflow:hidden;gap:1px;margin-bottom:8px}
+.rleg{display:flex;flex-direction:column;gap:5px}
 .ai{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--tx2)}
 .adot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .an{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -154,8 +159,18 @@ td:not(:first-child){text-align:right}
       <div class="sc"><div class="sc-l">Zwrot %</div><div class="sc-v" id="s-ret">—</div></div>
     </div>
     <div class="sb-lbl">Alokacja</div>
-    <div class="abar" id="abar" style="background:var(--bd)"></div>
-    <div class="aleg" id="aleg"></div>
+    <div class="atabs">
+      <button class="atab active" id="tab-alloc" onclick="switchTab('alloc')">Wartość</button>
+      <button class="atab" id="tab-risk" onclick="switchTab('risk')">Ryzyko</button>
+    </div>
+    <div id="view-alloc">
+      <div class="abar" id="abar" style="background:var(--bd)"></div>
+      <div class="aleg" id="aleg"></div>
+    </div>
+    <div id="view-risk" style="display:none">
+      <div class="rbar" id="rbar" style="background:var(--bd)"></div>
+      <div class="rleg" id="rleg"></div>
+    </div>
   </div>
   <div class="sb-foot">
     <div style="margin-bottom:6px">
@@ -212,6 +227,14 @@ td:not(:first-child){text-align:right}
       <div id="fcp-row"><label class="fl">Cena aktualna (opcjonalna — zostaw puste = pobierz przez AV)</label>
         <input class="fi" id="fcp" type="number" step="any" min="0" placeholder="np. 135.20 — wpisz ręcznie dla PPK/funduszy"/>
         <div class="fi-hint">Dla PPK i funduszy bez tickera wpisz aktualną wartość jednostki ręcznie</div></div>
+      <div><label class="fl">Poziom ryzyka (1 = bezpieczne, 5 = spekulacyjne)</label>
+        <select class="fi" id="frisk">
+          <option value="1">1 — Gotówka / lokaty</option>
+          <option value="2">2 — Obligacje / fundusze stabilne</option>
+          <option value="3" selected>3 — ETF szeroki rynek</option>
+          <option value="4">4 — ETF sektorowy / akcje duże</option>
+          <option value="5">5 — Akcje growth / spekulacyjne</option>
+        </select></div>
     </div>
     <div class="mft">
       <button class="bcn" onclick="cm()">Anuluj</button>
@@ -453,6 +476,7 @@ function render(){
       <div class="acc-body ${isOpen?'':'hidden'}">${renderTable(ps)}</div>`;
     grp.appendChild(sec);
   });
+  renderRisk(tv);
 }
 
 function srcBadge(s){
@@ -491,6 +515,43 @@ function renderTable(ps){
 
 window.toggleAcc=function(id){if(openAccs.has(id))openAccs.delete(id);else openAccs.add(id);save();render();}
 
+window.switchTab=function(tab){
+  document.getElementById('view-alloc').style.display=tab==='alloc'?'':'none';
+  document.getElementById('view-risk').style.display=tab==='risk'?'':'none';
+  document.getElementById('tab-alloc').classList.toggle('active',tab==='alloc');
+  document.getElementById('tab-risk').classList.toggle('active',tab==='risk');
+}
+
+function renderRisk(tv){
+  const RISK_COLORS={'1':'#1A5C38','2':'#2E7D52','3':'#7A4F10','4':'#A03030','5':'#6B0F0F'};
+  const RISK_LABELS={'1':'1 — Bezpieczne','2':'2 — Stabilne','3':'3 — Umiarkowane','4':'4 — Ryzykowne','5':'5 — Spekulacyjne'};
+  const groups={};
+  positions.forEach(p=>{
+    const c=comp(p);
+    if(c.valPLN==null) return;
+    const r=String(p.risk||3);
+    groups[r]=(groups[r]||0)+c.valPLN;
+  });
+  const rb=document.getElementById('rbar'),rl=document.getElementById('rleg');
+  rb.innerHTML='';rl.innerHTML='';
+  if(!tv){rb.style.background='var(--bd)';return;}
+  rb.style.background='';
+  [1,2,3,4,5].forEach(r=>{
+    const rs=String(r);
+    const val=groups[rs]||0;
+    if(!val) return;
+    const pct=val/tv*100;
+    const col=RISK_COLORS[rs];
+    const seg=document.createElement('div');
+    seg.style.cssText=`flex:${pct};background:${col};min-width:2px`;
+    rb.appendChild(seg);
+    const li=document.createElement('div');
+    li.className='ai';
+    li.innerHTML=`<span class="adot" style="background:${col}"></span><span class="an">${RISK_LABELS[rs]}</span><span class="ap">${pct.toFixed(1)}%</span>`;
+    rl.appendChild(li);
+  });
+}
+
 window.openModal=function(defAcc,ev,posId){
   if(ev)ev.stopPropagation();editId=posId||null;
   const p=posId?positions.find(x=>x.id===posId):null;
@@ -504,6 +565,7 @@ window.openModal=function(defAcc,ev,posId){
   document.getElementById('fqt').value=p?.qty||'';
   document.getElementById('fbp').value=p?.buyPrice||'';
   document.getElementById('fcp').value=p?.manualPrice||'';
+  document.getElementById('frisk').value=p?.risk||3;
   document.getElementById('bdel').style.display=p?'block':'none';
   document.getElementById('modal').style.display='flex';
   setTimeout(()=>document.getElementById('ftk').focus(),60);
@@ -529,6 +591,7 @@ window.sp=function(){
     manualPrice:manualPrice||null,
     curPrice:manualPrice||(existing?.curPrice||null),
     priceSource:manualPrice?'manual':(existing?.priceSource||'manual'),
+    risk:parseInt(document.getElementById('frisk').value)||3,
   };
   if(d.type==='Gotówka'){d.curPrice=1;d.priceSource='manual';}
   if(editId){const i=positions.findIndex(p=>p.id===editId);positions[i]={...positions[i],...d};}
