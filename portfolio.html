@@ -52,6 +52,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);font-
 .atab.active{background:var(--tx);color:var(--sur);border-color:transparent}
 .rbar{display:flex;height:5px;border-radius:99px;overflow:hidden;gap:1px;margin-bottom:8px}
 .rleg{display:flex;flex-direction:column;gap:5px}
+.drag-handle{cursor:grab;color:var(--tx3);padding:0 6px 0 0;font-size:12px;user-select:none;flex-shrink:0}
+.drag-handle:active{cursor:grabbing}
+tbody tr.dragging{opacity:.4;background:var(--sur2)}
+tbody tr.drag-over{border-top:2px solid var(--blue)}
+.cash-section{display:none}
+.inv-section{display:block}
 .ai{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--tx2)}
 .adot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .an{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -204,30 +210,42 @@ td:not(:first-child){text-align:right}
     <div class="mhd"><h3 id="mt">Nowa pozycja</h3><button class="mxb" onclick="cm()">×</button></div>
     <div class="mbody">
       <div><label class="fl">Konto</label>
-        <select class="fi" id="fa"><option>IKE</option><option>IKZE</option><option>PPK</option><option>Revolut</option><option>XTB</option><option>Gotówka</option></select></div>
-      <div><label class="fl">Ticker Alpha Vantage</label>
-        <input class="fi" id="ftk" placeholder="np. VWRL.AMS, GOOG, IUSQ.FRK" autocomplete="off"/>
-        <div class="fi-hint">Ticker z Alpha Vantage — sprawdź na alphavantage.co</div></div>
-      <div><label class="fl">Nazwa wyświetlana (opcjonalnie)</label>
-        <input class="fi" id="fnm" placeholder="np. Vanguard FTSE All-World"/></div>
-      <div class="fg2">
-        <div><label class="fl">Giełda</label>
-          <input class="fi" id="fex" placeholder="np. NASDAQ, XETRA"/></div>
-        <div><label class="fl">Typ</label>
-          <select class="fi" id="ftp"><option>ETF</option><option>Akcja</option><option>Gotówka</option></select></div>
+        <select class="fi" id="fa" onchange="onTypeChange()"><option>IKE</option><option>IKZE</option><option>PPK</option><option>Revolut</option><option>XTB</option><option>Gotówka</option></select></div>
+      <div><label class="fl">Typ</label>
+        <select class="fi" id="ftp" onchange="onTypeChange()"><option>ETF</option><option>Akcja</option><option>Gotówka</option></select></div>
+      <div class="inv-section" id="inv-fields">
+        <div style="margin-top:.875rem"><label class="fl">Ticker Alpha Vantage</label>
+          <input class="fi" id="ftk" placeholder="np. VWRL.AMS, GOOG, IUSQ.FRK" autocomplete="off"/>
+          <div class="fi-hint">Ticker z Alpha Vantage — sprawdź na alphavantage.co</div></div>
+        <div style="margin-top:.875rem"><label class="fl">Nazwa wyświetlana (opcjonalnie)</label>
+          <input class="fi" id="fnm" placeholder="np. Vanguard FTSE All-World"/></div>
+        <div class="fg2" style="margin-top:.875rem">
+          <div><label class="fl">Giełda</label>
+            <input class="fi" id="fex" placeholder="np. NASDAQ, XETRA"/></div>
+          <div><label class="fl">Waluta</label>
+            <select class="fi" id="fcu"><option>USD</option><option>EUR</option><option>PLN</option><option>GBP</option><option>CHF</option></select></div>
+        </div>
+        <div class="fg2" style="margin-top:.875rem">
+          <div><label class="fl">Ilość</label>
+            <input class="fi" id="fqt" type="number" step="any" min="0" placeholder="np. 10"/></div>
+          <div><label class="fl">Cena zakupu (w walucie pozycji)</label>
+            <input class="fi" id="fbp" type="number" step="any" min="0" placeholder="np. 120.50"/></div>
+        </div>
+        <div style="margin-top:.875rem"><label class="fl">Cena aktualna (opcjonalna — zostaw puste = AV)</label>
+          <input class="fi" id="fcp" type="number" step="any" min="0" placeholder="zostaw puste lub wpisz ręcznie (PPK/fundusze)"/>
+          <div class="fi-hint">Dla PPK i funduszy bez tickera wpisz wartość jednostki ręcznie</div></div>
       </div>
-      <div class="fg2">
-        <div><label class="fl">Waluta</label>
-          <select class="fi" id="fcu"><option>USD</option><option>EUR</option><option>PLN</option><option>GBP</option><option>CHF</option></select></div>
-        <div><label class="fl">Ilość</label>
-          <input class="fi" id="fqt" type="number" step="any" min="0" placeholder="np. 10"/></div>
+      <div class="cash-section" id="cash-fields">
+        <div style="margin-top:.875rem"><label class="fl">Nazwa (np. "Lokata PKO", "Konto oszczędnościowe")</label>
+          <input class="fi" id="fnm-cash" placeholder="np. Lokata 3-miesięczna"/></div>
+        <div class="fg2" style="margin-top:.875rem">
+          <div><label class="fl">Waluta</label>
+            <select class="fi" id="fcu-cash"><option>PLN</option><option>USD</option><option>EUR</option><option>GBP</option><option>CHF</option></select></div>
+          <div><label class="fl">Kwota</label>
+            <input class="fi" id="fqt-cash" type="number" step="any" min="0" placeholder="np. 10000"/></div>
+        </div>
       </div>
-      <div><label class="fl">Cena zakupu (średnia, w walucie pozycji)</label>
-        <input class="fi" id="fbp" type="number" step="any" min="0" placeholder="np. 120.50"/></div>
-      <div id="fcp-row"><label class="fl">Cena aktualna (opcjonalna — zostaw puste = pobierz przez AV)</label>
-        <input class="fi" id="fcp" type="number" step="any" min="0" placeholder="np. 135.20 — wpisz ręcznie dla PPK/funduszy"/>
-        <div class="fi-hint">Dla PPK i funduszy bez tickera wpisz aktualną wartość jednostki ręcznie</div></div>
-      <div><label class="fl">Poziom ryzyka (1 = bezpieczne, 5 = spekulacyjne)</label>
+      <div style="margin-top:.875rem"><label class="fl">Poziom ryzyka (1 = bezpieczne, 5 = spekulacyjne)</label>
         <select class="fi" id="frisk">
           <option value="1">1 — Gotówka / lokaty</option>
           <option value="2">2 — Obligacje / fundusze stabilne</option>
@@ -441,12 +459,35 @@ function render(){
   const ab=document.getElementById('abar'),al=document.getElementById('aleg');
   ab.innerHTML='';al.innerHTML='';
   if(positions.length&&tv>0){
-    [...positions].sort((a,b)=>(comp(b).valPLN||0)-(comp(a).valPLN||0)).forEach((p,i)=>{
-      const c=comp(p),sh=c.valPLN?(c.valPLN/tv)*100:0,col=PALETTE[i%PALETTE.length];
-      const seg=document.createElement('div');seg.style.cssText=`flex:${sh};background:${col};min-width:2px`;ab.appendChild(seg);
-      const li=document.createElement('div');li.className='ai';
-      li.innerHTML=`<span class="adot" style="background:${col}"></span><span class="an">${p.ticker||p.name}</span><span class="ap">${sh.toFixed(1)}%</span>`;al.appendChild(li);
+    // Scal po tickerze
+    const tickerMap={};
+    positions.forEach((p,i)=>{
+      const c=comp(p);
+      if(!c.valPLN) return;
+      const key=p.ticker||p.name;
+      if(!tickerMap[key]) tickerMap[key]={val:0,col:PALETTE[Object.keys(tickerMap).length%PALETTE.length]};
+      tickerMap[key].val+=c.valPLN;
     });
+    const sorted=Object.entries(tickerMap).sort((a,b)=>b[1].val-a[1].val);
+    let otherVal=0;
+    const shown=[];
+    sorted.forEach(([name,{val,col}])=>{
+      const pct=val/tv*100;
+      if(pct<1.5) otherVal+=val;
+      else shown.push({name,val,pct,col});
+    });
+    shown.forEach(({name,val,pct,col})=>{
+      const seg=document.createElement('div');seg.style.cssText=`flex:${pct};background:${col};min-width:2px`;ab.appendChild(seg);
+      const li=document.createElement('div');li.className='ai';
+      li.innerHTML=`<span class="adot" style="background:${col}"></span><span class="an">${name}</span><span class="ap">${pct.toFixed(1)}%</span>`;al.appendChild(li);
+    });
+    if(otherVal>0){
+      const pct=otherVal/tv*100;
+      const col='#9B9890';
+      const seg=document.createElement('div');seg.style.cssText=`flex:${pct};background:${col};min-width:2px`;ab.appendChild(seg);
+      const li=document.createElement('div');li.className='ai';
+      li.innerHTML=`<span class="adot" style="background:${col}"></span><span class="an">Inne</span><span class="ap">${pct.toFixed(1)}%</span>`;al.appendChild(li);
+    }
   }else{ab.style.background='var(--bd)';}
   const grp=document.getElementById('grp');grp.innerHTML='';
   ACCOUNTS.forEach(acc=>{
@@ -486,34 +527,72 @@ function srcBadge(s){
 }
 
 function renderTable(ps){
-  if(!ps.length)return`<table><tbody><tr class="empty-r"><td colspan="7">Brak pozycji — kliknij "+ Dodaj"</td></tr></tbody></table>`;
+  if(!ps.length)return`<table><tbody><tr class="empty-r"><td colspan="8">Brak pozycji — kliknij "+ Dodaj"</td></tr></tbody></table>`;
   return`<table style="table-layout:fixed;width:100%"><colgroup>
-    <col style="width:35%"><col style="width:8%"><col style="width:12%">
-    <col style="width:15%"><col style="width:13%"><col style="width:9%"><col style="width:8%">
+    <col style="width:3%"><col style="width:33%"><col style="width:8%"><col style="width:11%">
+    <col style="width:14%"><col style="width:13%"><col style="width:10%"><col style="width:8%">
   </colgroup><thead><tr>
-    <th>Instrument</th><th>Ilość</th><th>Śr. zakup</th>
+    <th></th><th>Instrument</th><th>Ilość</th><th>Śr. zakup</th>
     <th>Aktualna</th><th>Wartość PLN</th><th>P&amp;L natyw.</th><th>P&amp;L PLN</th>
   </tr></thead><tbody>`+ps.map(p=>{
     const c=comp(p),hp=p.curPrice&&p.curPrice>0;
     const cls=c.pnl>0?'pos':c.pnl<0?'neg':'neu';
     const exchLine=p.exchange?`${p.currency} · ${p.exchange}`:p.currency;
-    return`<tr onclick="openModal(null,event,'${p.id}')">
+    const isCash=p.type==='Gotówka';
+    return`<tr draggable="true" data-id="${p.id}"
+      ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="dragDrop(event)" ondragleave="dragLeave(event)" ondragend="dragEnd(event)"
+      onclick="openModal(null,event,'${p.id}')">
+      <td style="cursor:grab;color:var(--tx3);text-align:center;font-size:11px" onclick="event.stopPropagation()">⠿</td>
       <td><div class="pc">
-        <div class="pico">${(p.ticker||'?').slice(0,4).toUpperCase()}</div>
-        <div><div class="pname">${p.ticker}${p.name&&p.name!==p.ticker?` <span style="font-weight:400;color:var(--tx2)">· ${p.name}</span>`:''}</div>
-        <div class="pexch">${exchLine}</div></div>
+        <div class="pico">${(p.ticker||p.name||'?').slice(0,4).toUpperCase()}</div>
+        <div><div class="pname">${p.ticker||p.name}${p.name&&p.name!==p.ticker&&!isCash?` <span style="font-weight:400;color:var(--tx2)">· ${p.name}</span>`:''}</div>
+        <div class="pexch">${isCash?p.currency:exchLine}</div></div>
       </div></td>
-      <td class="mono">${fN(p.qty,p.qty%1===0?0:4)}</td>
-      <td class="mono">${fCur(p.buyPrice,p.currency)}</td>
-      <td>${hp?`<span class="mono">${fCur(p.curPrice,p.currency)}</span>${srcBadge(p.priceSource)}`:`<span class="dim">— odśwież</span>`}</td>
-      <td>${hp&&c.valPLN!=null?`<span class="mono" style="font-weight:500">${fPLN(c.valPLN)}</span><br><span class="mono dim" style="font-size:10px">${fCur(c.val,p.currency)}</span>`:`<span class="dim">—</span>`}</td>
-      <td>${hp?`<span class="mono ${cls}">${c.pnl>=0?'+':''}${fCur(c.pnl,p.currency)}</span><br><span class="mono ${cls}" style="font-size:10px">${fPct(c.pct)}</span>`:`<span class="dim">—</span>`}</td>
-      <td>${hp&&c.pnlPLN!=null?`<span class="mono ${cls}">${c.pnlPLN>=0?'+':''}${fPLN(c.pnlPLN)}</span>`:`<span class="dim">—</span>`}</td>
+      <td class="mono">${isCash?fCur(p.qty,p.currency,0):fN(p.qty,p.qty%1===0?0:4)}</td>
+      <td class="mono">${isCash?'—':fCur(p.buyPrice,p.currency)}</td>
+      <td>${isCash?`<span class="mono">1,00 ${p.currency}</span>`:hp?`<span class="mono">${fCur(p.curPrice,p.currency)}</span>${srcBadge(p.priceSource)}`:`<span class="dim">— odśwież</span>`}</td>
+      <td>${hp&&c.valPLN!=null?`<span class="mono" style="font-weight:500">${fPLN(c.valPLN)}</span><br><span class="mono dim" style="font-size:10px">${isCash?'':fCur(c.val,p.currency)}</span>`:`<span class="dim">—</span>`}</td>
+      <td>${isCash?`<span class="dim">—</span>`:hp?`<span class="mono ${cls}">${c.pnl>=0?'+':''}${fCur(c.pnl,p.currency)}</span><br><span class="mono ${cls}" style="font-size:10px">${fPct(c.pct)}</span>`:`<span class="dim">—</span>`}</td>
+      <td>${isCash?`<span class="dim">—</span>`:hp&&c.pnlPLN!=null?`<span class="mono ${cls}">${c.pnlPLN>=0?'+':''}${fPLN(c.pnlPLN)}</span>`:`<span class="dim">—</span>`}</td>
     </tr>`;
   }).join('')+`</tbody></table>`;
 }
 
 window.toggleAcc=function(id){if(openAccs.has(id))openAccs.delete(id);else openAccs.add(id);save();render();}
+
+// ── DRAG & DROP ──────────────────────────────────────────────────────────────
+let dragId=null;
+window.dragStart=function(e){
+  dragId=e.currentTarget.dataset.id;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+}
+window.dragOver=function(e){
+  e.preventDefault();e.dataTransfer.dropEffect='move';
+  e.currentTarget.classList.add('drag-over');
+}
+window.dragLeave=function(e){e.currentTarget.classList.remove('drag-over');}
+window.dragEnd=function(e){e.currentTarget.classList.remove('dragging');}
+window.dragDrop=function(e){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  const targetId=e.currentTarget.dataset.id;
+  if(!dragId||dragId===targetId) return;
+  const fromIdx=positions.findIndex(p=>p.id===dragId);
+  const toIdx=positions.findIndex(p=>p.id===targetId);
+  if(fromIdx<0||toIdx<0) return;
+  const [moved]=positions.splice(fromIdx,1);
+  positions.splice(toIdx,0,moved);
+  dragId=null;
+  save();render();
+}
+
+// ── TYPE TOGGLE ──────────────────────────────────────────────────────────────
+window.onTypeChange=function(){
+  const isCash=document.getElementById('ftp').value==='Gotówka';
+  document.getElementById('inv-fields').style.display=isCash?'none':'block';
+  document.getElementById('cash-fields').style.display=isCash?'block':'none';
+  if(isCash){document.getElementById('frisk').value='1';}
+}
 
 window.switchTab=function(tab){
   document.getElementById('view-alloc').style.display=tab==='alloc'?'':'none';
@@ -557,43 +636,63 @@ window.openModal=function(defAcc,ev,posId){
   const p=posId?positions.find(x=>x.id===posId):null;
   document.getElementById('mt').textContent=p?'Edytuj pozycję':'Nowa pozycja';
   document.getElementById('fa').value=p?.account||defAcc||'IKE';
-  document.getElementById('ftk').value=p?.ticker||'';
-  document.getElementById('fnm').value=(p?.name!==p?.ticker)?(p?.name||''):'';
-  document.getElementById('fex').value=p?.exchange||'';
+  const isCash=(p?.type||'ETF')==='Gotówka';
   document.getElementById('ftp').value=p?.type||'ETF';
-  document.getElementById('fcu').value=p?.currency||'USD';
-  document.getElementById('fqt').value=p?.qty||'';
-  document.getElementById('fbp').value=p?.buyPrice||'';
-  document.getElementById('fcp').value=p?.manualPrice||'';
   document.getElementById('frisk').value=p?.risk||3;
+  if(isCash){
+    document.getElementById('fnm-cash').value=p?.name||'';
+    document.getElementById('fcu-cash').value=p?.currency||'PLN';
+    document.getElementById('fqt-cash').value=p?.qty||'';
+    document.getElementById('inv-fields').style.display='none';
+    document.getElementById('cash-fields').style.display='block';
+    document.getElementById('frisk').value=p?.risk||1;
+  } else {
+    document.getElementById('ftk').value=p?.ticker||'';
+    document.getElementById('fnm').value=(p?.name!==p?.ticker)?(p?.name||''):'';
+    document.getElementById('fex').value=p?.exchange||'';
+    document.getElementById('fcu').value=p?.currency||'USD';
+    document.getElementById('fqt').value=p?.qty||'';
+    document.getElementById('fbp').value=p?.buyPrice||'';
+    document.getElementById('fcp').value=p?.manualPrice||'';
+    document.getElementById('inv-fields').style.display='block';
+    document.getElementById('cash-fields').style.display='none';
+  }
   document.getElementById('bdel').style.display=p?'block':'none';
   document.getElementById('modal').style.display='flex';
-  setTimeout(()=>document.getElementById('ftk').focus(),60);
+  setTimeout(()=>{ const f=isCash?document.getElementById('fnm-cash'):document.getElementById('ftk'); f?.focus(); },60);
 }
 window.cm=function(){document.getElementById('modal').style.display='none';editId=null;}
 window.bgc=function(e){if(e.target===document.getElementById('modal'))cm();}
 
 window.sp=function(){
-  const ticker=document.getElementById('ftk').value.trim();
-  const qty=parseFloat(document.getElementById('fqt').value);
-  const buy=parseFloat(document.getElementById('fbp').value);
-  if(!ticker||isNaN(qty)||isNaN(buy)){toast('Wpisz ticker, ilość i cenę zakupu');return;}
+  const type=document.getElementById('ftp').value;
+  const isCash=type==='Gotówka';
   const existing=editId?positions.find(p=>p.id===editId):null;
-  const manualPriceRaw=document.getElementById('fcp').value.trim();
-  const manualPrice=manualPriceRaw?parseFloat(manualPriceRaw):null;
-  const d={
-    account:document.getElementById('fa').value,ticker,
-    name:document.getElementById('fnm').value.trim()||ticker,
-    exchange:document.getElementById('fex').value.trim().toUpperCase(),
-    type:document.getElementById('ftp').value,
-    currency:document.getElementById('fcu').value,
-    qty,buyPrice:buy,
-    manualPrice:manualPrice||null,
-    curPrice:manualPrice||(existing?.curPrice||null),
-    priceSource:manualPrice?'manual':(existing?.priceSource||'manual'),
-    risk:parseInt(document.getElementById('frisk').value)||3,
-  };
-  if(d.type==='Gotówka'){d.curPrice=1;d.priceSource='manual';}
+  let d;
+  if(isCash){
+    const name=document.getElementById('fnm-cash').value.trim()||'Gotówka';
+    const currency=document.getElementById('fcu-cash').value;
+    const qty=parseFloat(document.getElementById('fqt-cash').value);
+    if(isNaN(qty)||qty<=0){toast('Wpisz kwotę');return;}
+    d={account:document.getElementById('fa').value,ticker:name,name,exchange:'',type:'Gotówka',
+       currency,qty,buyPrice:1,curPrice:1,priceSource:'manual',manualPrice:null,
+       risk:parseInt(document.getElementById('frisk').value)||1};
+  } else {
+    const ticker=document.getElementById('ftk').value.trim();
+    const qty=parseFloat(document.getElementById('fqt').value);
+    const buy=parseFloat(document.getElementById('fbp').value);
+    if(!ticker||isNaN(qty)||isNaN(buy)){toast('Wpisz ticker, ilość i cenę zakupu');return;}
+    const manualPriceRaw=document.getElementById('fcp').value.trim();
+    const manualPrice=manualPriceRaw?parseFloat(manualPriceRaw):null;
+    d={account:document.getElementById('fa').value,ticker,
+       name:document.getElementById('fnm').value.trim()||ticker,
+       exchange:document.getElementById('fex').value.trim().toUpperCase(),
+       type,currency:document.getElementById('fcu').value,
+       qty,buyPrice:buy,manualPrice:manualPrice||null,
+       curPrice:manualPrice||(existing?.curPrice||null),
+       priceSource:manualPrice?'manual':(existing?.priceSource||'manual'),
+       risk:parseInt(document.getElementById('frisk').value)||3};
+  }
   if(editId){const i=positions.findIndex(p=>p.id===editId);positions[i]={...positions[i],...d};}
   else positions.push({id:Date.now().toString(),...d});
   save();render();cm();
