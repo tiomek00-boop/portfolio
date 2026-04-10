@@ -459,9 +459,9 @@ function render(){
   const ab=document.getElementById('abar'),al=document.getElementById('aleg');
   ab.innerHTML='';al.innerHTML='';
   if(positions.length&&tv>0){
-    // Scal po tickerze, wyklucz gotówkę
+    // Scal po tickerze
     const tickerMap={};
-    positions.filter(p=>p.type!=='Gotówka').forEach(p=>{
+    positions.forEach((p,i)=>{
       const c=comp(p);
       if(!c.valPLN) return;
       const key=p.ticker||p.name;
@@ -489,11 +489,6 @@ function render(){
       li.innerHTML=`<span class="adot" style="background:${col}"></span><span class="an">Inne</span><span class="ap">${pct.toFixed(1)}%</span>`;al.appendChild(li);
     }
   }else{ab.style.background='var(--bd)';}
-  renderAccounts();
-  renderRisk(tv);
-}
-
-function renderAccounts(){
   const grp=document.getElementById('grp');grp.innerHTML='';
   ACCOUNTS.forEach(acc=>{
     const ps=positions.filter(p=>p.account===acc);
@@ -522,7 +517,10 @@ function renderAccounts(){
       <div class="acc-body ${isOpen?'':'hidden'}">${renderTable(ps)}</div>`;
     grp.appendChild(sec);
   });
-}(s){
+  renderRisk(tv);
+}
+
+function srcBadge(s){
   if(!s||s==='manual')return'<span class="bsrc src-manual">ręcznie</span>';
   if(s==='live')return'<span class="bsrc src-live">live</span>';
   return'<span class="bsrc src-close">zamknięcie</span>';
@@ -547,10 +545,8 @@ function renderTable(ps){
       <td style="cursor:grab;color:var(--tx3);text-align:center;font-size:11px" onclick="event.stopPropagation()">⠿</td>
       <td><div class="pc">
         <div class="pico">${(p.ticker||p.name||'?').slice(0,4).toUpperCase()}</div>
-        <div style="overflow:hidden">
-          <div class="pname" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.ticker||p.name}</div>
-          <div class="pexch">${isCash?p.currency:p.name&&p.name!==p.ticker?`<span style="color:var(--tx2)">${p.name}</span> · ${exchLine}`:exchLine}</div>
-        </div>
+        <div><div class="pname">${p.ticker||p.name}${p.name&&p.name!==p.ticker&&!isCash?` <span style="font-weight:400;color:var(--tx2)">· ${p.name}</span>`:''}</div>
+        <div class="pexch">${isCash?p.currency:exchLine}</div></div>
       </div></td>
       <td class="mono">${isCash?fCur(p.qty,p.currency,0):fN(p.qty,p.qty%1===0?0:4)}</td>
       <td class="mono">${isCash?'—':fCur(p.buyPrice,p.currency)}</td>
@@ -562,13 +558,7 @@ function renderTable(ps){
   }).join('')+`</tbody></table>`;
 }
 
-window.toggleAcc=function(id){
-  if(openAccs.has(id)) openAccs.delete(id);
-  else openAccs.add(id);
-  save();
-  // Rebuild only acc-group without full re-render to avoid event conflicts
-  renderAccounts();
-}
+window.toggleAcc=function(id){if(openAccs.has(id))openAccs.delete(id);else openAccs.add(id);save();render();}
 
 // ── DRAG & DROP ──────────────────────────────────────────────────────────────
 let dragId=null;
@@ -658,7 +648,7 @@ window.openModal=function(defAcc,ev,posId){
     document.getElementById('frisk').value=p?.risk||1;
   } else {
     document.getElementById('ftk').value=p?.ticker||'';
-    document.getElementById('fnm').value=p?.name&&p.name!==p.ticker?p.name:'';
+    document.getElementById('fnm').value=(p?.name!==p?.ticker)?(p?.name||''):'';
     document.getElementById('fex').value=p?.exchange||'';
     document.getElementById('fcu').value=p?.currency||'USD';
     document.getElementById('fqt').value=p?.qty||'';
